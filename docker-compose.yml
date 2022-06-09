@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  waitfordb:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - db
+    command: db:5432
+
+  db:
+#    secrets:
+#      - psql_user
+#      - psql_pass
+#      - psql_db_name
+    build:
+      dockerfile: docker/psgl/Dockerfile
+      context: .
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgre
+      POSTGRES_PASSWORD: postgre
+      POSTGRES_DB: develop
+#      POSTGRES_USER_FILE: /run/secrets/psql_user
+#      POSTGRES_PASSWORD_FILE: /run/secrets/psql_pass
+#      POSTGRES_DB_FILE: /run/secrets/psql_db_name
+      TZ: Asia/Tokyo
+    volumes:
+      - ./db/logs:/var/log
+    ports:
+      - 5432:5432
+
+  api:
+    build:
+      dockerfile: docker/app/Dockerfile
+      context: .
+    volumes:
+      - ./app:/src/app
+    depends_on:
+      - db
+      - waitfordb
+
+#secrets:
+#  psql_user:
+#    file: ./docker_secret/local_psql_user.txt
+#  psql_pass:
+#    file: ./docker_secret/local_psql_pass.txt
+#  psql_db_name:
+#    file: ./docker_secret/local_psql_db.txt
