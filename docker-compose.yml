@@ -13,7 +13,7 @@ services:
 #      - psql_pass
 #      - psql_db_name
     build:
-      dockerfile: docker/psgl/Dockerfile
+      dockerfile: docker/db/Dockerfile
       context: .
     container_name: postgres-db
     environment:
@@ -29,7 +29,7 @@ services:
     ports:
       - 5432:5432
 
-  api:
+  app:
     build:
       dockerfile: docker/app/Dockerfile
       context: .
